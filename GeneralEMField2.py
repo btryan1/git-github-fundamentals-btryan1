@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from cmath import pi
 import numpy as np
 import math
-import copy
 from Particle import ChargedParticle
 import matplotlib.pyplot as plt
 
@@ -53,15 +52,21 @@ class EMField(GeneralEMField):
 def test(choice1):
     BField= EMField(ElectricField = np.array([0,0,0], dtype=float), MagneticField = np.array([0,0,-1E-5], dtype=float))
     time = 0  # initial time stamp
-    deltaT =0.9E-6  # time steps of 1ms
+    deltat =0.001E-5  # time steps of 1ms
+    deltat_2=0.0002E-5
 
     times = []
     X=[]
     Y=[]
+    T=[]
+    T_2=[]
+    deltaT=[]
+    deltaT_2=[]
     no_deltaT=0
     vmax=299792455
     # run simulation until time period has been achieved 
-
+    T.append(particle.kineticEnergy())  
+    T_2.append(particle.kineticEnergy()) 
     if choice1==0:
         while time<=BField.TimePeriod():
             times.append(time)
@@ -70,12 +75,16 @@ def test(choice1):
             X.append(particle.position[0])
             Y.append(particle.position[1])
             # update the time
-            time += deltaT
+            time += deltat
             no_deltaT += 1
             # update the positions and velocities
-            particle.update(deltaT,3,particle.acceleration,Force)
+            particle.update(deltat,3,particle.acceleration,Force)
+            T.append(particle.kineticEnergy())
+            deltaT.append(T[-1]-T[-2])
+        return X,Y,times,T,deltaT
+    
     else:
-        while time<=6.55E-3:
+        while time<=BField.TimePeriod():
             times.append(time)
 
             # store the xy-position
@@ -83,19 +92,37 @@ def test(choice1):
             Y.append(particle.position[1])
 
             # update the time
-            time += deltaT
+            time += deltat_2
             no_deltaT += 1
             acceleration=BField.getAcceleration()
             # update the positions and velocities
-            particle.update(deltaT,2,acceleration,0)
+            particle.update(deltat_2,2,acceleration,0)
+            T_2.append(particle.kineticEnergy())
+            deltaT_2.append(T_2[-1]-T_2[-2])
+        return X,Y,times,T_2,deltaT_2
+def plot1():
 
-    fft=np.fft.fft2((X,Y))
+    X,Y,times,T,deltaT=test(0)
+    X,Y,times_2,T_2,deltaT_2=test(1)
 
-    print(max(abs(fft)))
-    plt.plot(X,Y, 'r-', label='trajectory')
+    fft=np.fft.fft(Y)
+    plt.plot(times,deltaT, 'r-', label='DeltaT choice 1')
+    plt.plot(times_2,deltaT_2, 'g', label='DeltaT choice 2')
     plt.xlabel('time (s)')
-    plt.ylabel('y-position (m)')
+    plt.ylabel('Delta T(j)')
     plt.title('Proton of non-zero inital velocity in a constand B-Field')
     plt.legend()
 
-    plt.show()
+    plt.show()      
+
+def plot2():
+    X,Y,times_2,T_2,deltaT_2=test(1)
+    plt.plot(X,Y, 'g', label='DeltaT choice 2')
+    plt.xlabel('X(m)')
+    plt.ylabel('Y(m)')
+    plt.title('Proton of non-zero inital velocity in a constand B-Field')
+    plt.legend()
+
+    plt.show()      
+
+plot2()
