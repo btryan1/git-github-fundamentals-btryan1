@@ -27,28 +27,17 @@ def test(proton_num):
    
     while time<=BField.TimePeriod():
             for i in range(proton_num):
-                if i ==0:
                     proton = ChargedParticle(
                         position=Proton_Bunch_Positions[i],
                         velocity=Proton_Bunch_Velocites[i],
                         acceleration=Proton_Bunch_Accelerations[i],
-                        charge=-1)
+                        name="Proton",
+                        mass=1.6726219E-27,
+                        charge=1.602176634E-19)
                     X.append(proton.position[0])
                     Y.append(proton.position[1])
                     Z.append(proton.position[2])
-                    acceleration=BField.getAcceleration(proton.velocity)
-                    proton.update(deltat,2,acceleration,0)
-                    Proton_Bunch_Positions[i]=proton.position
-                    Proton_Bunch_Velocites[i]=proton.velocity
-                else:
-                    proton = ChargedParticle(
-                        position=Proton_Bunch_Positions[i],
-                        velocity=Proton_Bunch_Velocites[i],
-                        acceleration=Proton_Bunch_Accelerations[i])
-                    X.append(proton.position[0])
-                    Y.append(proton.position[1])
-                    Z.append(proton.position[2])
-                    acceleration=BField.getAcceleration(proton.velocity)
+                    acceleration=BField.getAcceleration(proton)
                     proton.update(deltat,2,acceleration,0)
                     Proton_Bunch_Positions[i]=proton.position
                     Proton_Bunch_Velocites[i]=proton.velocity
@@ -105,8 +94,8 @@ def update(i):
 
 
 
-    ax.set_xlim(-0.02, 0.02)
-    ax.set_ylim(-0.02, 0.02)
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-5, 5)
     ax.set_zlim(-0, 0.)
 
 fig = plt.figure(dpi=200)
