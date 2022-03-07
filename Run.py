@@ -1,4 +1,5 @@
 from matplotlib.animation import FuncAnimation
+import pandas as pd
 from Particle import ChargedParticle
 from Particle import ProtonBunch
 import matplotlib.pyplot as plt
@@ -9,7 +10,7 @@ from GeneralEMField2 import EMField
 BField= EMField(ElectricField = np.array([0,0,0], dtype=float), MagneticField = np.array([0,0,-1E-5], dtype=float))
 PB=ProtonBunch()
 
-def test(proton_num):
+def test(proton_num,proton_choice):
     time = 0  # initial time stamp
     deltat =0.01E-5  # time steps of 1ms
     deltat_2=0.0002E-5
@@ -26,6 +27,7 @@ def test(proton_num):
     Proton_Bunch_Accelerations=np.zeros((proton_num,3))
    
     while time<=BField.TimePeriod():
+        if proton_choice==1:
             for i in range(proton_num):
                     proton = ChargedParticle(
                         position=Proton_Bunch_Positions[i],
@@ -42,64 +44,35 @@ def test(proton_num):
                     Proton_Bunch_Positions[i]=proton.position
                     Proton_Bunch_Velocites[i]=proton.velocity
             time += deltat
+        elif proton_choice==2:
+                for i in range(proton_num):
+                    antiproton = ChargedParticle(
+                        position=Proton_Bunch_Positions[i],
+                        velocity=Proton_Bunch_Velocites[i],
+                        acceleration=Proton_Bunch_Accelerations[i],
+                        name="Proton",
+                        mass=1.6726219E-27,
+                        charge=-1.602176634E-19)
+                    X.append(antiproton.position[0])
+                    Y.append(antiproton.position[1])
+                    Z.append(antiproton.position[2])
+                    acceleration=BField.getAcceleration(antiproton)
+                    antiproton.update(deltat,2,acceleration,0)
+                    Proton_Bunch_Positions[i]=antiproton.position
+                    Proton_Bunch_Velocites[i]=antiproton.velocity
+                time += deltat
+        else:
+            print('Incorrect proton type')
+            break
     return X,Y,Z
-def Extract(X,Y,Z):
-    X_0=[]
-    X_1=[]
-    Y_0=[]
-    Y_1=[]
-    Z_0=[]
-    Z_1=[]
-    for i in range(0,len(X)-1,4*160):
-        X_0.append(X[i])
-        X_1.append(X[i+1])
-        Y_0.append(Y[i])   
-        Y_1.append(Y[i+1])      
-        Z_0.append(Z[i])
-        Z_1.append(Z[i+1]) 
-    return (X_0,X_1,Y_0,Y_1,Z_0,Z_1)
+choice=2
+X,Y,Z=test(2,choice)
 
-time_percent=3.049968E-4    
-X,Y,Z=test(2)
-
-X_0,X_1,Y_0,Y_1,Z_0,Z_1=Extract(X,Y,Z)
-X_line=[]
-Y_line=[]
-Z_line=[]
-X_1line=[]
-Y_1line=[]
-Z_1line=[]
-
-
-def update(i):
-    ax.cla()
-
-    x = X_0[i]
-    y = Y_0[i]
-    z = 0
-    X_line.append(x)
-    Y_line.append(y)
-    Z_line.append(z)
-    x_1 = X_0[i]
-    y_1 = Y_0[i]
-    z_1 = 0
-    X_1line.append(x_1)
-    Y_1line.append(y_1)
-    Z_1line.append(z_1)
-
-    ax.scatter(x, y, z, s = 15, marker = 'o')
-    ax.scatter(x_1, y_1, z_1, s = 10, marker = 'o')
-    ax.plot(X_line, Y_line, Z_line)
-    ax.plot(X_1line, Y_1line, Z_1line)
-
-
-
-    ax.set_xlim(-5, 5)
-    ax.set_ylim(-5, 5)
-    ax.set_zlim(-0, 0.)
-
-fig = plt.figure(dpi=200)
-ax = fig.add_subplot(projection='3d')
-
-ani = FuncAnimation(fig = fig, func = update, frames = 600, interval = 1, repeat = False)
-plt.show()
+df=np.vstack((X,Y,Z))
+print(np.shape(df))
+if choice==1 :    
+    pd.DataFrame(df).to_csv(r'C:\Users\benti\Documents\PHYS 389\2Proton.csv')
+    print('2Proton.csv has been saved')
+elif choice==2:
+    pd.DataFrame(df).to_csv(r'C:\Users\benti\Documents\PHYS 389\2AntiProton.csv')
+    print('2AntiProton.csv has been saved')
