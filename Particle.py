@@ -2,7 +2,7 @@
 
 import numpy as np
 import math
-from GeneralEMField2 import EMField
+
 np.random.seed(seed=1943545)
 
 
@@ -32,7 +32,6 @@ class ChargedParticle():
             self.velocity = self.velocity + self.acceleration*(deltaT)
             self.position = self.position + self.velocity*(deltaT) 
 
-    
     def Momentum(self):
         self.momentum= self.mass*self.velocity
         return self.momentum
@@ -46,63 +45,22 @@ class Proton(ChargedParticle):
     def __repr__(self):
         return 'Charged Particle: {0}, Mass: {1:12.3e}, Charge: {2:12.3e}, Position: {3}, Velocity: {4}, Acceleration: {5}'.format(self.name,self.mass,self.charge,self.position, self.velocity,self.acceleration)
 
+class AntiProton(ChargedParticle):
+    def __init__(self, position=np.array([0, 0, 0], dtype=float), velocity=np.array([0, 0, 0], dtype=float), acceleration=np.array([0, 0, 0],dtype=float), name='Anit-Proton', mass=1.6726219E-27,charge=-1.602176634E-19):
+        super().__init__(position, velocity, acceleration, name, mass,charge)
+    def __repr__(self):
+        return 'Charged Particle: {0}, Mass: {1:12.3e}, Charge: {2:12.3e}, Position: {3}, Velocity: {4}, Acceleration: {5}'.format(self.name,self.mass,self.charge,self.position, self.velocity,self.acceleration)
 
-class ProtonBunch(EMField,Proton):
-    def __init__(self,ElectricField , MagneticField):
-        self.electric=ElectricField
-        self.magnetic=MagneticField
-
-    def Generate_Bunch(self,proton_num):
-        Bunch=[]                      
-        mean = [0, 0, 0]
-        mean_2=[900,1100,0]
-        position_matrix = [[0.01, 0, 0], [0, 0.01, 0], [0, 0, 0.01]]
-        velocity_matrix=[[1000, 0, 0], [0, 1000, 0], [0, 0, 0]]
-        # using np.multinomial() method
-        proton_positions = np.random.multivariate_normal(mean, position_matrix, proton_num)
-        proton_velocities=np.random.multivariate_normal(mean_2, velocity_matrix, proton_num)
-        for i in range(proton_num):
-            proton=Proton()
-            proton.position=proton_positions[i]
-            proton.velocity=proton_velocities[i]
-            Bunch.append(proton)
-        return Bunch
+class DeuteriumNucleus(ChargedParticle):
+    def __init__(self, position=np.array([0, 0, 0], dtype=float), velocity=np.array([0, 0, 0], dtype=float), acceleration=np.array([0, 0, 0],dtype=float), name='Deuterium Nucleus', mass=3.343580719E-27,charge=1.602176634E-19):
+        super().__init__(position, velocity, acceleration, name, mass,charge)
+    def __repr__(self):
+        return 'Charged Particle: {0}, Mass: {1:12.3e}, Charge: {2:12.3e}, Position: {3}, Velocity: {4}, Acceleration: {5}'.format(self.name,self.mass,self.charge,self.position, self.velocity,self.acceleration)
     
-    def Bunch_Update(self,bunch,deltaT,method):
-        BField= EMField(self.electric,self.magnetic)
-        for i in range(len(bunch)):
-            proton=bunch[i]
-            acceleration=BField.getAcceleration(proton)
-            proton.update(deltaT,method,acceleration)
-            bunch[i]=proton
-        return bunch
-         
-    def Orbit_Period(self,bunch):
-        BField= EMField(self.electric,self.magnetic)
-        Orbit_Period=[]
-        for i in range(len(bunch)):
-            Orbit_Period.append(BField.TimePeriod(bunch[i]))
-        return (max(Orbit_Period))
-        
-    
-    def Averages(self,positions,velocities):
-        Average_Position=[np.mean(positions[:,0]),np.mean(positions[:,1]),np.mean(positions[:,2])]
-        Average_Velocities=[np.mean(velocities[:,0]),np.mean(velocities[:,1]),np.mean(velocities[:,2])]
-        return(Average_Position,Average_Velocities)
+class AntiDeuteriumNucleus(ChargedParticle):
+    def __init__(self, position=np.array([0, 0, 0], dtype=float), velocity=np.array([0, 0, 0], dtype=float), acceleration=np.array([0, 0, 0],dtype=float), name='Anti Deuterium Nucleus', mass=3.343580719E-27,charge=-1.602176634E-19):
+        super().__init__(position, velocity, acceleration, name, mass,charge)
+    def __repr__(self):
+        return 'Charged Particle: {0}, Mass: {1:12.3e}, Charge: {2:12.3e}, Position: {3}, Velocity: {4}, Acceleration: {5}'.format(self.name,self.mass,self.charge,self.position, self.velocity,self.acceleration)
 
-    def EnergySpread(self,velocities):
-        T=[]
-        for i in range(len(velocities)):
-            T.append((1/2)*self.mass*np.linalg.norm(velocities))
-
-    def Store_Positions(self,bunch):
-        X=[]
-        Y=[]
-        Z=[]
-        for i in range(len(bunch)):
-            proton=bunch[i]
-            X.append(proton.position[0])
-            Y.append(proton.position[1])
-            Z.append(proton.position[2])
-        return (np.vstack((X,Y,Z)))
 
