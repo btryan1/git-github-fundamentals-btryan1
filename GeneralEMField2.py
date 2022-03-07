@@ -2,20 +2,12 @@ from abc import ABC, abstractmethod
 from cmath import pi
 import numpy as np
 import math
-from Particle import ChargedParticle
 import matplotlib.pyplot as plt
 
 class GeneralEMField(ABC):
 
     @abstractmethod
-    def __init__(self, ElectricField = np.array([0,0,0], dtype=float), MagneticField = np.array([0,0,0], dtype=float),particle = ChargedParticle(
-    position=np.array([0, 0, 0]),
-    velocity=np.array([0, 0, 0]),
-    acceleration=np.array([0, 0, 0]),
-    name="Proton",
-    mass=1.6726219E-27,
-    charge=1.602176634E-19
-)):
+    def __init__(self, ElectricField = np.array([0,0,0], dtype=float), MagneticField = np.array([0,0,0], dtype=float)):
         self.electric = np.array(ElectricField,dtype=float)
         self.magnetic = np.array(MagneticField, dtype=float)
         super(GeneralEMField, self).__init__()
@@ -33,16 +25,12 @@ class GeneralEMField(ABC):
     
 class EMField(GeneralEMField):
         
-    def __init__(self, ElectricField = np.array([0,0,0], dtype=float),MagneticField = np.array([0,0,0], dtype=float) ):
+    def __init__(self,ElectricField = np.array([0,0,0], dtype=float),MagneticField = np.array([0,0,0], dtype=float)):
         super().__init__(ElectricField,MagneticField)
-    
+  
     def TimePeriod(self,particle):
         return (2*pi*particle.mass)/(particle.charge*np.linalg.norm(self.magnetic))
     
-    def getForce(self,momentum,particle):
-        lorentz = np.array(self.electric, dtype=float)
-        lorentz+=np.cross(particle.charge*momentum/particle.mass, self.magnetic)
-        return lorentz
     
 
 time_percent=3.049968E-4    
