@@ -1,4 +1,4 @@
-from Particle import Proton,AntiProton,DeuteriumNucleus
+from Particle import Proton,AntiProton,DeuteriumNucleus,AntiDeuteriumNucleus
 from GeneralEMField2 import EMField
 import numpy as np
 
