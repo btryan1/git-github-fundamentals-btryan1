@@ -4,11 +4,14 @@ import matplotlib.animation as animation
 import pandas as pd
 from matplotlib.animation import FuncAnimation, PillowWriter
 
-df = pd.read_csv(r'C:\Users\benti\Documents\PHYS 389\1ProtonPositions.csv')
+df = pd.read_csv(r'C:\Users\benti\Documents\PHYS 389\100ProtonPositions.csv')
 n = 1000
 number_of_frames = 1000
 data = pd.DataFrame(df).to_numpy()
 Positions=data[:,1:]
+X_1=Positions[:,0]
+Y_1=Positions[:,1]
+Z_1=Positions[:,2]
 
 
 def update_hist(num, data):
@@ -21,26 +24,25 @@ def update_hist(num, data):
 
     animation = animation.FuncAnimation(fig, update_hist, number_of_frames, fargs=(data, ) )
         
-def Extract(Positions):
+def Extract(X_1,Y_1,Z_1):
     X=[]
     Y=[]
     Z=[]
-    for i in range(0,65400,200):
-        current=Positions[i]
-        X.append(current[0])
-        Y.append(current[1])
-        Z.append(current[2])
+    for i in range(0,1826,2):
+        X.append(X_1[i])
+        Y.append(Y_1[i])
+        Z.append(Z_1[i])
     return X,Y,Z
 
 
 time_percent=3.049968E-4    
-X,Y,Z=Extract(Positions)
+X,Y,Z=Extract(X_1,Y_1,Z_1)
 X_line=[]
 Y_line=[]
 Z_line=[]
+
+
 frames=len(X)
-
-
 def update(i):
     ax.cla()
 
@@ -65,7 +67,9 @@ fig = plt.figure(dpi=150)
 ax = fig.add_subplot(projection='3d')
 
 anim = FuncAnimation(fig = fig, func = update, frames = frames, interval = 1, repeat = False)
-f = r'C:\Users\benti\Documents\PHYS 389\2AntiProton.gif'
+f = r'C:\Users\benti\Documents\PHYS 389\100Proton.gif'
 writergif = animation.PillowWriter(fps=30) 
 anim.save(f, writer=writergif)
 plt.show()
+
+
