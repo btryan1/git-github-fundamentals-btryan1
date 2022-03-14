@@ -3,7 +3,7 @@ from cmath import pi
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-
+from scipy import signal
 class GeneralEMField(ABC):
 
     @abstractmethod
@@ -25,12 +25,16 @@ class GeneralEMField(ABC):
     
 class EMField(GeneralEMField):
         
-    def __init__(self,ElectricField = np.array([0,0,0], dtype=float),MagneticField = np.array([0,0,0], dtype=float)):
-        super().__init__(ElectricField,MagneticField)
+    def __init__(self,electric = np.array([0,0,0], dtype=float),magnetic = np.array([0,0,0], dtype=float)):
+        super().__init__(electric,magnetic)
   
     def TimePeriod(self,particle):
         return (2*pi*particle.mass)/(particle.charge*np.linalg.norm(self.magnetic))
-    
-    
 
-time_percent=3.049968E-4    
+    def Cyclotron_Frequency(self,particle):
+        return (particle.charge*np.linalg.norm(self.magnetic))/(particle.mass)
+
+    def Square_Wave_Gen(self,f_cyclo):
+        t = np.linspace(0, 0.05, 2000, endpoint=False)
+        return signal.square(f_cyclo * t)
+
